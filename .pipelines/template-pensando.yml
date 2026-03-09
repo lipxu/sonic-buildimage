@@ -12,7 +12,7 @@ parameters:
 jobs:
   - job: ${{ replace(parameters.NAME, '-', '_') }}
     timeoutInMinutes: 360
-    condition: false
+    # condition: false
     pool:
       type: linux
       isCustom: true

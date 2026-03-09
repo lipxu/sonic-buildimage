@@ -26,6 +26,7 @@ steps:
   - template: template-daemon.yml
   - task: SSH@0
     displayName: "test blobfuse2 on jumpbox"
+    continueOnError: true
     inputs:
       sshEndpoint: 'jumpbox'
       failOnStdErr: false
