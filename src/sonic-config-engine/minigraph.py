@@ -1543,7 +1543,9 @@ def parse_meta(meta, hname):
                     qos_profile = value
                 elif name == "RackMgmtMap":
                     rack_mgmt_map = value
-    return syslog_servers, dhcp_servers, dhcpv6_servers, ntp_servers, tacacs_servers, mgmt_routes, erspan_dst, deployment_id, region, cloudtype, resource_type, downstream_subrole, switch_id, switch_type, max_cores, kube_data, macsec_profile, downstream_redundancy_types, redundancy_type, qos_profile, rack_mgmt_map
+                elif name == "ZebraNexthop":
+                    zebra_nexthop = value
+    return syslog_servers, dhcp_servers, dhcpv6_servers, ntp_servers, tacacs_servers, mgmt_routes, erspan_dst, deployment_id, region, cloudtype, resource_type, downstream_subrole, switch_id, switch_type, max_cores, kube_data, macsec_profile, downstream_redundancy_types, redundancy_type, qos_profile, rack_mgmt_map, zebra_nexthop
 
 
 def parse_linkmeta(meta, hname):
@@ -2039,6 +2041,7 @@ def parse_xml(filename, platform=None, port_config_file=None, asic_name=None, hw
     redundancy_type = None
     qos_profile = None
     rack_mgmt_map = None
+    zebra_nexthop = None
     chassis_linecards_info = {}
     chassis_hwsku = None
     chassis_port_alias = {}
@@ -2091,7 +2094,7 @@ def parse_xml(filename, platform=None, port_config_file=None, asic_name=None, hw
             elif child.tag == str(QName(ns, "UngDec")):
                 (u_neighbors, u_devices, _, _, _, _, _, _) = parse_png(child, hostname, None)
             elif child.tag == str(QName(ns, "MetadataDeclaration")):
-                (syslog_servers, dhcp_servers, dhcpv6_servers, ntp_servers, tacacs_servers, mgmt_routes, erspan_dst, deployment_id, region, cloudtype, resource_type, downstream_subrole, switch_id, switch_type, max_cores, kube_data, macsec_profile, downstream_redundancy_types, redundancy_type, qos_profile, rack_mgmt_map) = parse_meta(child, hostname)
+                (syslog_servers, dhcp_servers, dhcpv6_servers, ntp_servers, tacacs_servers, mgmt_routes, erspan_dst, deployment_id, region, cloudtype, resource_type, downstream_subrole, switch_id, switch_type, max_cores, kube_data, macsec_profile, downstream_redundancy_types, redundancy_type, qos_profile, rack_mgmt_map, zebra_nexthop) = parse_meta(child, hostname)
             elif child.tag == str(QName(ns, "LinkMetadataDeclaration")):
                 linkmetas = parse_linkmeta(child, hostname)
             elif child.tag == str(QName(ns, "DeviceInfos")):
@@ -2166,6 +2169,9 @@ def parse_xml(filename, platform=None, port_config_file=None, asic_name=None, hw
 
     if rack_mgmt_map is not None:
         results['DEVICE_METADATA']['localhost']['rack_mgmt_map'] = rack_mgmt_map
+
+    if zebra_nexthop is not None:
+        results['DEVICE_METADATA']['localhost']['zebra_nexthop'] = zebra_nexthop
 
     cluster = [devices[key] for key in devices if key.lower() == hostname.lower()][0].get('cluster', "")
     if cluster:
